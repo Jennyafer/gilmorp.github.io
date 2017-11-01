@@ -27,6 +27,7 @@
             maxZoom: 16
         }).addTo(mymap);
 
+        //This is the earthquake data
         L.geoJSON(MapData).addTo(mymap);
     </script>
 
