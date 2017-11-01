@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <script src = "CACounties.js" ></script>
+    <script src = "earthquake.js" ></script>
     <style>
         #mapid{ width: 1500px; height: 850px;}
     </style>  
@@ -24,12 +25,7 @@
         maxZoom: 16
     }).addTo(mymap);
 
-    var county = L.geoJSON(CACounty, {
-      onEachFeature: addPopups,
-      pointToLayer: pointToCircle
-    });
-    map.addLayer(county);
-    map.fitBounds(county.getBounds());
+    L.geoJSON(MapData).addTo(mymap);
 
     </script>
 
@@ -37,4 +33,5 @@
 
 
 </html>
+
 
