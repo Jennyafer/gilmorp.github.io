@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Change this later because this is a place holder</title>
+    <title>Giovisualization Final Project</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <script src="earthquake.js"></script>
