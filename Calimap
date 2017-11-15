@@ -5,8 +5,12 @@
     <meta charset="UTF-8">
     <title>Giovisualization Final Project</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="leaflet-easy-button.css"/>
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <script src="earthquake.js"></script>
+    <script src="CaliCounty.js"></script>
+    <script src="leaflet-easy-button.js"></script>
+    <script src="leaflet-tag-filter-button.js"></script>
     <style>
         #mapid {
             width: 1500px;
@@ -28,7 +32,33 @@
         }).addTo(mymap);
 
         //This is the earthquake data
+        //L.geoJSON(MapData).addTo(mymap);
+
+        //This is the county data
+        //L.geoJSON(countyData).addTo(mymap);
+
+        var helloPopup = L.popup().setContent('Hello World!');
+        var fastMarker = L.marker([50.5, 30.5], { tags: ['fast'] }).addTo(mymap); 
+        var slowMarker = L.marker([50.5, 30.5], { tags: ['slow'] }).addTo(mymap);
+        var bothMarker = L.marker([50.5, 30.5], { tags: ['fast', 'slow'] }).addTo(mymap);
+
+       // L.easyButton('fa-globe', function(btn, map){
+          //  data: ['fast', 'slow']
+           // helloPopup.setLatLng(map.getCenter()).openOn(map);
+       // }).addTo( mymap );
+
+        L.control.tagFilterButton({
+            data: ['0-6', '6+', 'none'],
+            icon: '<img src="filter.png">',
+            filterOnEveryClick: true
+        }).addTo( mymap );
+
+        //This is the earthquake data
         L.geoJSON(MapData).addTo(mymap);
+
+        //This is the county data
+        L.geoJSON(countyData).addTo(mymap);
+               
     </script>
 
 </body>
