@@ -24,6 +24,13 @@
     <div id="mapid"></div>
 
     <script>
+        
+        function addPopups(feature, layer) {
+            layer.bindPopup("<dl><dt>Location:   " + feature.properties.place + "</dt>"
+                    +"<dt>Magnitude:   " + feature.properties.mag + "</dt>"
+                    +"<dt>Time:   " + new Date(feature.properties.time) + "</dt></dl>");
+        }
+        
         var mymap = L.map('mapid').setView([36.778, -119.417], 6);
 
         var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
@@ -54,7 +61,9 @@
         }).addTo( mymap );
 
         //This is the earthquake data
-        L.geoJSON(MapData).addTo(mymap);
+        L.geoJSON(MapData, {
+            onEachFeature: addPopups
+        }).addTo(mymap);
 
         //This is the county data
         L.geoJSON(countyData).addTo(mymap);
