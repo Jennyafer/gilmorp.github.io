@@ -28,33 +28,24 @@
       </div>
 
     <script>
-        //this is the map
-        var myMap = L.map('defaultMap').setView([36.778, -119.417], 6);
-        
-        //Start by creating the geoJSON layer
-        var geoLayer = L.geoJSON().addTo(myMap);
-        
-  ////////////////////////////////////////////////////////////////////////////////
- //                       //SLIDER INFORMATION                                 //
-////////////////////////////////////////////////////////////////////////////////
-        var slider = document.getElementById("myRange");
+
+        var slider = 
+            document.getElementById("myRange");
         slider.oninput = function() {
-            //clears the geo Layer
-            geoLayer.clearLayers();
+            mymap.clearLayers();
             //TODO: if date != slide date, remove popup
             L.geoJSON(MapData, {
-                //filter out everything that doesn't match the slider date
                 filter: function(feature, layer) {
                     return (new Date(feature.properties.time).getYear() == slider.value);
                 }
-                //bind pop-ups
-            }).bindPopup(function(layer) {
-                return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
-                    +"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
-                    +"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
-			}).addTo(geoLayer); //dump it all in the geolayer;
+            }).addTo(mymap);
         }
 
+        function addPopups(feature, layer) {
+            layer.bindPopup("<dl><dt>Location:   " + feature.properties.place + "</dt>"
+                    +"<dt>Magnitude:   " + feature.properties.mag + "</dt>"
+                    +"<dt>Time:   " + new Date(feature.properties.time) + "</dt></dl>");
+        }
 
         var mymap = L.map('mapid').setView([36.778, -119.417], 6);
 
@@ -70,9 +61,10 @@
         }).addTo( mymap );
 
 
-  ////////////////////////////////////////////////////////////////////////////////
- //                 //setting up the aesthetic stuff//                         //
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//setting up the aesthetic stuff//
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 //define styles for circle markers
         var dotStyleDefault = {
             radius: 5,
@@ -136,9 +128,8 @@
                     +"<dt>Time:   " + new Date(feature.properties.time) + "</dt></dl>");
         }
 
-  ////////////////////////////////////////////////////////////////////////////////
- //                     //DONE WITH AESTHETICS!!                               //
-////////////////////////////////////////////////////////////////////////////////
+         ////////////DONE WITH ASTETICS/////////
+        ///////////////////////////////////////
         dotlayer = L.geoJson(MapData, {
             pointToLayer: function (feature, coordinates) {         // This line is wehre it calls the coordinates for the data points for earthquakes
                 return L.circleMarker(coordinates, dotStyleDefault); // This line pulls the circlemarkers.
@@ -158,8 +149,8 @@
 /////////////// TEST LAYERS FOR NEW MAP DATA /////////////
 /////////////////////////////////////////////////////////
 
-        //This is the county data but it breaks right now
-        //L.geoJSON(countyData).addTo(mymap);
+        //This is the county data
+        L.geoJSON(countyData).addTo(mymap);
                
     </script>
 
