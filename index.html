@@ -67,16 +67,7 @@
 
         //This is the county data
         L.geoJSON(countyData).addTo(mymap);
-        
-        var slider = document.getElementById("myRange");
-        slider.oninput=function(){
-            //TODO: if date != slider date, remove popup
-            L.geoJSON(MapData, {
-                filter:function(feature,layer){
-                    return(newDate(feature.properties.time).getYear()==slider.value);
-                }
-            }).addTo(mymap);
-        }
+
                
     </script>
 
