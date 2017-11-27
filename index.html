@@ -143,7 +143,7 @@
             pointToLayer: function (feature, coordinates) {         // This line is wehre it calls the coordinates for the data points for earthquakes
                 return L.circleMarker(coordinates, dotStyleDefault); // This line pulls the circlemarkers.
                 },
-            onEachFeature: L.geoJSON(MapData, { OPTIONS }).bindPopup().addTo(geoLayer)
+            onEachFeature: onEachGdot
         }).addTo(mymap);
 
         var overlayMaps = {
