@@ -61,14 +61,7 @@ var slider = document.getElementById("myRange");
             attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
             maxZoom: 16
         }).addTo(myMap);
-
-        L.control.tagFilterButton({
-            data: ['0-6', '6+', 'none'],
-            icon: '<img src="filter.png">',
-            filterOnEveryClick: true
-        }).addTo( myMap );
-        
-    
+  
 
   ////////////////////////////////////////////////////////////////////////////////
  //                 //setting up the aesthetic stuff//                         //
@@ -160,7 +153,7 @@ var slider = document.getElementById("myRange");
 		mynewgeoObject.addTo(dotlayer)
 
 		var overlayMaps = {
-            '<div class="dotLegend dotColor"></div> The Blue Dots': 
+            '<div class="dotLegend dotColor"></div> Earthquake Locations': 
 			dotlayer
 			//'<div class="dotLegend gdotColor"></div> The Green Dots': 
 			//gdotlayer
