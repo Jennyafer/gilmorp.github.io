@@ -12,7 +12,7 @@
     <script src="leaflet-easy-button.js"></script>
     <script src="leaflet-tag-filter-button.js"></script>
     <style>
-        #mapid {
+        #defaultMap {
             width: 1500px;
             height: 850px;
         }
@@ -21,50 +21,54 @@
 
 <body>
     <h1>California Earthquakes</h1>
-    <div id="mapid"></div>
+    <div id="defaultMap"></div>
 
     <div id="slidecontainer">
         <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
       </div>
 
     <script>
-
-        var slider = 
-            document.getElementById("myRange");
+        //this is the map
+        var myMap = L.map('defaultMap').setView([36.778, -119.417], 6);
+        
+        //Start by creating the geoJSON layer
+        var geoLayer = L.geoJSON().addTo(myMap);
+        
+  ////////////////////////////////////////////////////////////////////////////////
+ //                       //SLIDER INFORMATION                                 //
+////////////////////////////////////////////////////////////////////////////////
+var slider = document.getElementById("myRange");
         slider.oninput = function() {
-            mymap.clearLayers();
+            //clears the geo Layer
+            geoLayer.clearLayers();
             //TODO: if date != slide date, remove popup
             L.geoJSON(MapData, {
+                //filter out everything that doesn't match the slider date
                 filter: function(feature, layer) {
                     return (new Date(feature.properties.time).getYear() == slider.value);
                 }
-            }).addTo(mymap);
+                //bind pop-ups
+            }).bindPopup(function(layer) {
+                return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+                    +"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+                    +"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+			}).addTo(geoLayer); //dump it all in the geolayer;
         }
-
-        function addPopups(feature, layer) {
-            layer.bindPopup("<dl><dt>Location:   " + feature.properties.place + "</dt>"
-                    +"<dt>Magnitude:   " + feature.properties.mag + "</dt>"
-                    +"<dt>Time:   " + new Date(feature.properties.time) + "</dt></dl>");
-        }
-
-        var mymap = L.map('mapid').setView([36.778, -119.417], 6);
-
+        //var myMap = L.map('mapid').setView([36.778, -119.417], 6);
         var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
             maxZoom: 16
-        }).addTo(mymap);
-
+        }).addTo(myMap);
         L.control.tagFilterButton({
             data: ['0-6', '6+', 'none'],
             icon: '<img src="filter.png">',
             filterOnEveryClick: true
-        }).addTo( mymap );
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-//setting up the aesthetic stuff//
-//////////////////////////////////////////////////////////////////////////////////////////////
-
+        }).addTo( myMap );
+        
+    
+  ////////////////////////////////////////////////////////////////////////////////
+ //                 //setting up the aesthetic stuff//                         //
+////////////////////////////////////////////////////////////////////////////////
 //define styles for circle markers
         var dotStyleDefault = {
             radius: 5,
@@ -74,7 +78,6 @@
             opacity: 1,
             fillOpacity: 0.9
         };
-
         var dotStyleHighlight = {
             radius: 6,
             fillColor: "#20a0ff",
@@ -83,7 +86,6 @@
             opacity: 1,
             fillOpacity: 0.9
         };
-
         var gdotStyleDefault = {
             radius: 5,
             fillColor: "#40b060",
@@ -92,7 +94,6 @@
             opacity: 1,
             fillOpacity: 0.9
         };
-
         var gdotStyleHighlight = {
             radius: 6,
             fillColor: "#40b060",
@@ -101,24 +102,20 @@
             opacity: 1,
             fillOpacity: 0.9
         };
-
         //functions to attach styles and popups to the marker layer
         function highlightDot(e) {
             var layer = e.target;
-
             layer.setStyle(dotStyleHighlight);
-
             if (!L.Browser.ie && !L.Browser.opera) {
                 layer.bringToFront();
             }
         }
-
         function resetDotHighlight(e) {
             var layer = e.target;
             layer.setStyle(dotStyleDefault);
         }
         ///THIS IS WHERE THE NEW POPUPS ARE!!!!
-        function onEachDot(feature, layer) {
+        function filterDot(feature, layer) {
             layer.on({
                 mouseover: highlightDot,
                 mouseout: resetDotHighlight
@@ -126,31 +123,36 @@
             layer.bindPopup("<dl><dt>Location:   " + feature.properties.place + "</dt>"
                     +"<dt>Magnitude:   " + feature.properties.mag + "</dt>"
                     +"<dt>Time:   " + new Date(feature.properties.time) + "</dt></dl>");
+			return (new Date(feature.properties.time).getYear() == slider.value)  //selects certain features based on the given function
         }
-
-         ////////////DONE WITH ASTETICS/////////
-        ///////////////////////////////////////
-        dotlayer = L.geoJson(MapData, {
-            pointToLayer: function (feature, coordinates) {         // This line is wehre it calls the coordinates for the data points for earthquakes
-                return L.circleMarker(coordinates, dotStyleDefault); // This line pulls the circlemarkers.
-                },
-            onEachFeature: onEachDot
-        }).addTo(mymap);
-
-        var overlayMaps = {
+  ////////////////////////////////////////////////////////////////////////////////
+ //                     //DONE WITH AESTHETICS!!                               //
+////////////////////////////////////////////////////////////////////////////////
+		// new layer
+	    var dotlayer = L.geoJSON().addTo(myMap);
+	  
+     //here are the options we want to use when selecting which features, and how to display them
+		var options = {
+		pointToLayer: function(feature, coordinates) {return L.circleMarker(coordinates, dotStyleDefault)},  //not sure what this does
+		filterDot: function(feature, layer) {return (new Date(feature.properties.time).getYear() == slider.value)}  //selects certain features based on the given function
+		};
+    //using those options, create a geo object
+		var mynewgeoObject = L.geoJSON(MapData, options).bindPopup(function(layer) 
+		{return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+					+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+					+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";});
+    //attach the geo object to your new layer
+		mynewgeoObject.addTo(dotlayer)
+		var overlayMaps = {
             '<div class="dotLegend dotColor"></div> The Blue Dots': 
-            dotlayer,
-            '<div class="dotLegend gdotColor"></div> The Green Dots': 
-            gdotlayer
-        };
-
-        layerbox = L.control.layers(null, overlayMaps, {collapsed: 
-        false}).addTo(map);
+			dotlayer
+			//'<div class="dotLegend gdotColor"></div> The Green Dots': 
+			//gdotlayer
+		};
 /////////////// TEST LAYERS FOR NEW MAP DATA /////////////
 /////////////////////////////////////////////////////////
-
-        //This is the county data
-        L.geoJSON(countyData).addTo(mymap);
+        //This is the county data but it breaks right now
+        //L.geoJSON(countyData).addTo(myMap);
                
     </script>
 
