@@ -6,6 +6,7 @@
     <title>Geovisualization Final Project</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <link rel="stylesheet" href="leaflet-easy-button.css"/>
+    <link rel="stylesheet" href="leaf.css"/>
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
     <script src="earthquake.js"></script>
     <script src="CaliCounty.js"></script>
@@ -24,7 +25,7 @@
     <div id="defaultMap"></div>
 
     <div id="slidecontainer">
-        <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
       </div>
 
     <script>
@@ -55,10 +56,12 @@ var slider = document.getElementById("myRange");
 			}).addTo(geoLayer); //dump it all in the geolayer;
         }
         //var myMap = L.map('mapid').setView([36.778, -119.417], 6);
+
         var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
             maxZoom: 16
         }).addTo(myMap);
+
         L.control.tagFilterButton({
             data: ['0-6', '6+', 'none'],
             icon: '<img src="filter.png">',
@@ -66,6 +69,7 @@ var slider = document.getElementById("myRange");
         }).addTo( myMap );
         
     
+
   ////////////////////////////////////////////////////////////////////////////////
  //                 //setting up the aesthetic stuff//                         //
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +82,7 @@ var slider = document.getElementById("myRange");
             opacity: 1,
             fillOpacity: 0.9
         };
+
         var dotStyleHighlight = {
             radius: 6,
             fillColor: "#20a0ff",
@@ -86,6 +91,7 @@ var slider = document.getElementById("myRange");
             opacity: 1,
             fillOpacity: 0.9
         };
+
         var gdotStyleDefault = {
             radius: 5,
             fillColor: "#40b060",
@@ -94,6 +100,7 @@ var slider = document.getElementById("myRange");
             opacity: 1,
             fillOpacity: 0.9
         };
+
         var gdotStyleHighlight = {
             radius: 6,
             fillColor: "#40b060",
@@ -102,14 +109,19 @@ var slider = document.getElementById("myRange");
             opacity: 1,
             fillOpacity: 0.9
         };
+
+
         //functions to attach styles and popups to the marker layer
         function highlightDot(e) {
             var layer = e.target;
+
             layer.setStyle(dotStyleHighlight);
+
             if (!L.Browser.ie && !L.Browser.opera) {
                 layer.bringToFront();
             }
         }
+
         function resetDotHighlight(e) {
             var layer = e.target;
             layer.setStyle(dotStyleDefault);
@@ -125,6 +137,7 @@ var slider = document.getElementById("myRange");
                     +"<dt>Time:   " + new Date(feature.properties.time) + "</dt></dl>");
 			return (new Date(feature.properties.time).getYear() == slider.value)  //selects certain features based on the given function
         }
+
   ////////////////////////////////////////////////////////////////////////////////
  //                     //DONE WITH AESTHETICS!!                               //
 ////////////////////////////////////////////////////////////////////////////////
@@ -136,24 +149,25 @@ var slider = document.getElementById("myRange");
 		pointToLayer: function(feature, coordinates) {return L.circleMarker(coordinates, dotStyleDefault)},  //not sure what this does
 		filterDot: function(feature, layer) {return (new Date(feature.properties.time).getYear() == slider.value)}  //selects certain features based on the given function
 		};
+
     //using those options, create a geo object
 		var mynewgeoObject = L.geoJSON(MapData, options).bindPopup(function(layer) 
 		{return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
 					+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
 					+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";});
+
     //attach the geo object to your new layer
 		mynewgeoObject.addTo(dotlayer)
+
 		var overlayMaps = {
             '<div class="dotLegend dotColor"></div> The Blue Dots': 
 			dotlayer
 			//'<div class="dotLegend gdotColor"></div> The Green Dots': 
 			//gdotlayer
 		};
-/////////////// TEST LAYERS FOR NEW MAP DATA /////////////
-/////////////////////////////////////////////////////////
-        //This is the county data but it breaks right now
-        //L.geoJSON(countyData).addTo(myMap);
-               
+
+        layerbox = L.control.layers(null, overlayMaps, {collapsed: false}).addTo(myMap);
+
     </script>
 
 </body>
