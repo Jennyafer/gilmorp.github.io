@@ -152,14 +152,15 @@ var slider = document.getElementById("myRange");
     //attach the geo object to your new layer
 		mynewgeoObject.addTo(dotlayer)
 
+        // THIS IS THE FILTER CONTROLS!!!!
 		var overlayMaps = {
-            '<div class="dotLegend dotColor"></div> Earthquake Locations': 
+            		'<div class="dotLegend dotColor"></div> Earthquake Locations': 
 			dotlayer
 			//'<div class="dotLegend gdotColor"></div> The Green Dots': 
 			//gdotlayer
 		};
 
-        layerbox = L.control.layers(null, overlayMaps, {collapsed: false}).addTo(myMap);
+        	layerbox = L.control.layers(null, overlayMaps, {collapsed: false}).addTo(myMap); // This adds the filter to the map
 
     </script>
 
