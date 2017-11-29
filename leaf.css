@@ -1,0 +1,16 @@
+.sliderContainer {
+    margin: 0 50px;
+}
+.dotLegend {
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    display:inline-block;
+    behavior: url(PIE.htc); /* remove if you don't care about IE8 */
+}
+.dotColor{
+    background: #20a0ff;
+}
+.gdotColor{
+    background: #40b060;
+}
