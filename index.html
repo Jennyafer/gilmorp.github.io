@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Geovisualization Final Project</title>
     <link rel="stylesheet" href="leaflet.css" />
-    <link rel="stylesheet" href="leaf.css"/>
+	<link rel="stylesheet" href="leaf.css"/>
+	<link rel="stylesheet" href="sidebar.css"/>
 	<link rel="stylesheet" href="Tooltip.css"/>
 	<script src="leaflet.js"></script>
     <script src="earthquake.js"></script>
@@ -21,13 +22,36 @@
 </head>
 
 <body>
-    <h1 style="color:red;">California Earthquakes</h1>
+<div class="sidenav">
+	<a href="#about">
+		About: <br/>
+		<small>This is where we need to put in information.</small>
+	</a>
+	<br/>
+	<a href="#services">
+		Services:<br/>
+		<small>This is where we need to put in information.</small>
+	</a>
+	<br/>
+	<a href="#clients">
+		Additional Details:<br/>
+		<small>This is where we need to put in information.</small>
+	</a>
+	<br/>
+	<a href="#contact">
+		Credits:<br/>
+		<small>This is where we need to put in information.</small>
+	</a>
+</div>
+				
+<div class="main">	
+    <h1 style="color:red;">Western United States Earthquakes</h1>
     <div id="defaultMap"></div>
 	<br/>
 	<br/>
     <div class="tooltip" id="slidecontainer">
-        <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
-		<span class="tooltiptext">Tooltip text</span>
+        <input type="range" min="5" max="116" value="50" class="slider" id="myRange">
+		<span class="tooltiptext">Year</span>
       </div>
 
     <script>
@@ -44,7 +68,7 @@
 		var slider = document.getElementById("myRange");
 				slider.oninput = function() {
 					//ToolTip popup update STILL WORKING ON IT
-					//document.getElementById("tooltiptext").innerHTML = "<dt>Year:   " + new Date(layer.feature.properties.time).getYear() + "</dt>"
+					//document.getElementByClassName("tooltiptext").innerHTML = "<dt>" + new Date(layer.feature.properties.time).getYear() + "</dt>"
 					//clears the geo Layer
 					geoLayer.clearLayers();
 					//TODO: if date != slide date, remove popup
@@ -272,17 +296,7 @@
 					});
 			}}
 		).addTo(quakeGroup);
-		
-		/*
-		quakeGroup.eachLayer(function(layer) {
-            '<div class="dotLegend dotColor"></div> Magnitudes 0-4'; layer1,
-            '<div class="dotLegend gdotColor"></div> Magnitude 5'; layer2,
-            '<div class="dotLegend bdotColor"></div> Magnitude 6'; layer3,
-            '<div class="dotLegend ydotColor"></div> Magnitudes 7+'; layer4
-			//runs on each quake layer
-            console.log("I'm a quake layer!");
-		});
-		*/
+
 		
 // THIS IS THE FILTER CONTROLS!!!!
 var overlayMaps = {
@@ -292,6 +306,7 @@ var overlayMaps = {
     '<div class="dotLegend RdotColor"></div> Magnitudes 7+': layer4
 };
 layerbox = L.control.layers(null, overlayMaps, {collapsed: false}).addTo(myMap); // This adds the filter to the map
-    </script>
+	</script>
+</div>
 </body>
 </html>
