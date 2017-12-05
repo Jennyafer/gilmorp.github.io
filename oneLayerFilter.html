@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html>
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>Geovisualization Final Project</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="leaflet-easy-button.css"/>
+    <link rel="stylesheet" href="leaf.css"/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="earthquake.js"></script>
+	
+	<!-- RENAME THIS. NEEDS TO BE CALICOUNTIES NOT CALICOUNTY-->
+	
+    <script src="CaliCounty.js"></script>
+    <script src="leaflet-easy-button.js"></script>
+    <script src="leaflet-tag-filter-button.js"></script>
+    <style>
+        #defaultMap {
+            width: 1500px;
+            height: 850px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>California Earthquakes</h1>
+    <div id="defaultMap"></div>
+
+    <div id="slidecontainer">
+        <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
+      </div>
+
+    <script>
+        //this is the map
+        var myMap = L.map('defaultMap').setView([36.778, -119.417], 6);
+        //Start by creating the geoJSON layer
+        var geoLayer = L.geoJSON().addTo(myMap);
+        
+  ////////////////////////////////////////////////////////////////////////////////
+ //                       //SLIDER INFORMATION                                 //
+////////////////////////////////////////////////////////////////////////////////
+
+
+/**  temporarily commented out for testing
+
+		var slider = document.getElementById("myRange");
+				slider.oninput = function() {
+					//clears the geo Layer
+					geoLayer.clearLayers();
+					//TODO: if date != slide date, remove popup
+					L.geoJSON(MapData, {
+						//filter out everything that doesn't match the slider date
+						filter: function(feature, layer) {
+							return (new Date(feature.properties.time).getYear() == slider.value);
+						}
+						//bind pop-ups
+					}).bindPopup(function(layer) {
+						return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+					}).addTo(geoLayer); //dump it all in the geolayer;
+				}
+**/
+        var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+            maxZoom: 16
+        }).addTo(myMap);
+  
+  ////////////////////////////////////////////////////////////////////////////////
+ //                 //setting up the aesthetic stuff//                         //
+////////////////////////////////////////////////////////////////////////////////
+		//define styles for circle markers
+        /*
+        ///////////MAG 4!!!\\\\\\\\\\
+		var dotStyleDefault = {
+            radius: 5,
+            fillColor: "#ffe600",
+            color: "#000",
+            weight: 0,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        var dotStyleHighlight = {
+            radius: 6,
+            fillColor: "#ffe600",
+            color: "#22c",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        */
+        
+        ///////////MAG 4!!!!\\\\\\\\\\
+        var dotStyleDefault = {
+            radius: 5,
+            fillColor: "#ffae00",
+            color: "#000",
+            weight: 0,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        var dotStyleHighlight = {
+            radius: 6,
+            fillColor: "#ffae00",
+            color: "#22c",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+		///////////MAG 5!!!!\\\\\\\\\\
+		var gdotStyleDefault = {
+            radius: 5,
+            fillColor: "#ff7b00",
+            color: "#000",
+            weight: 0,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        var gdotStyleHighlight = {
+            radius: 6,
+            fillColor: "#ff7b00",
+            color: "#22c",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        ///////////MAG 6!!!!\\\\\\\\\\
+        var bdotStyleDefault = {
+            radius: 5,
+            fillColor: "#fd4912",
+            color: "#000",
+            weight: 0,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        var bdotStyleHighlight = {
+            radius: 6,
+            fillColor: "#fd4912",
+            color: "#22c",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        ///////////MAG 7+!!!\\\\\\\\\\
+        var ydotStyleDefault = {
+            radius: 5,
+            fillColor: "#cf0000",
+            color: "#000",
+            weight: 0,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        var ydotStyleHighlight = {
+            radius: 6,
+            fillColor: "#cf0000",
+            color: "#22c",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+		
+        //functions to attach styles and popups to the marker layer
+        function highlightDot(e) {
+            var layer = e.target;
+            layer.setStyle(dotStyleHighlight);
+            if (!L.Browser.ie && !L.Browser.opera) {
+                layer.bringToFront();
+            }
+        }
+        function resetDotHighlight(e) {
+            var layer = e.target;
+            layer.setStyle(dotStyleDefault);
+        }
+
+  ////////////////////////////////////////////////////////////////////////////////
+ //                     //DONE WITH AESTHETICS!!                               //
+////////////////////////////////////////////////////////////////////////////////
+		
+		//there's a better way to do this, but meh
+		var magnitudes = [[0,4.99], [5,5.99], [6,6.99], [7,10]];
+		var mystyles = [dotStyleDefault, gdotStyleDefault, bdotStyleDefault, ydotStyleDefault];
+
+		var quakeGroup = L.layerGroup().addTo(myMap);
+		
+		for (var i in magnitudes) {
+			console.log("checking magnitude range "+i);
+			L.geoJSON(MapData, {
+				filter: function(feature) {
+					return (feature.properties.mag > magnitudes[i][0] && feature.properties.mag < magnitudes[i][1]);
+				}, pointToLayer: function(feature, coordinates) {
+					return L.circleMarker(coordinates, dotStyleDefault)
+				}, style: function(feature) {
+					return mystyles[i];
+				}, onEachFeature: function(feature, layer) {
+					layer.on({ 
+						mouseover:highlightDot,
+						mouseout: resetDotHighlight
+					});
+					layer.bindPopup(function(layer) {
+						return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+								+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+								+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+						});
+				}
+			}).addTo(quakeGroup);
+		}
+		
+		quakeGroup.eachLayer(function(layer) {
+            '<div class="dotLegend dotColor"></div> Earthquake Locations'; dotlayer,
+            '<div class="dotLegend gdotColor"></div> The Green Dots'; gdotlayer,
+            '<div class="dotLegend OdotColor"></div> The Green Dots'; bdotlayer
+			//runs on each quake layer
+            console.log("I'm a quake layer!");
+		});
+		
+		
+		//put this stuff in the quake group.eachlayer part
+	//	var overlayMaps = {
+	//		'<div class="dotLegend dotColor"></div> Earthquake Locations': dotlayer
+	//		'<div class="dotLegend gdotColor"></div> The Green Dots': gdotlayer
+	//	};
+
+	//dunno what this does
+		layerbox = L.control.layers(null, quakeGroup, {collapsed: false}).addTo(myMap); // This adds the LAYER filter to the map
+    </script>
+</body>
+</html>

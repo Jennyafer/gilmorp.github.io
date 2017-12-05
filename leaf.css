@@ -8,9 +8,18 @@
     display:inline-block;
     behavior: url(PIE.htc); /* remove if you don't care about IE8 */
 }
-.dotColor{
+.RdotColor{
     background: #cf0000;
 }
 .gdotColor{
-    background: #40b060;
+    background: #fd4912;
+}
+.OdotColor{
+    background: #ff7b00;
+}
+.YdotColor{
+    background: #ffae00;
+}
+.WdotColor{
+    background: #ffe600;
 }

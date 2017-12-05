@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Geovisualization Final Project</title>
+    <link rel="stylesheet" href="leaflet.css" />
+    <link rel="stylesheet" href="leaflet-easy-button.css"/>
+    <link rel="stylesheet" href="leaf.css"/>
+    <script src="leaflet.js"></script>
+    <script src="earthquake.js"></script>
+    <script src="leaflet-tag-filter-button.js"></script>
+    <style>
+        #defaultMap {
+            width: 1500px;
+            height: 850px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>California Earthquakes</h1>
+    <div id="defaultMap"></div>
+
+    <div id="slidecontainer">
+        <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
+    </div>
+    <div class="content" style="position:absolute; z-index:99; top:8px; left:339px;">January <span class='value'></span></div>\
+
+    <script>
+        //this is the map
+        var myMap = L.map('defaultMap').setView([36.778, -119.417], 6);
+        
+        //creating the geoJSON layer
+        var geoLayer = L.geoJSON().addTo(myMap);
+        
+  ////////////////////////////////////////////////////////////////////////////////
+ //                       //SLIDER INFORMATION                                 //
+////////////////////////////////////////////////////////////////////////////////
+var slider = document.getElementById("myRange");
+        slider.oninput = function() {
+            //clears the geo Layer
+            geoLayer.clearLayers();
+            //TODO: if date != slide date, remove popup
+            L.geoJSON(MapData, {
+                //filter out everything that doesn't match the slider date
+                filter: function(feature, layer) {
+                    return (new Date(feature.properties.time).getYear() == slider.value);
+                }
+                //bind pop-ups
+            }).bindPopup(function(layer) {
+                return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+                    +"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+                    +"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+            }).addTo(geoLayer); //dump it all in the geolayer;
+            
+            document.querySelector('.content').innerHTML = new Date(feature.properties.time).getYear();
+                buildGraph(); 
+        }
+
+        //var myMap = L.map('mapid').setView([36.778, -119.417], 6);
+        var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+            maxZoom: 16
+        }).addTo(myMap);
+  
+  ////////////////////////////////////////////////////////////////////////////////
+ //                 //setting up the aesthetic stuff//                         //
+////////////////////////////////////////////////////////////////////////////////
+//define styles for circle markers
+        var dotStyleDefault = {
+            radius: 5,
+            fillColor: "#d60303",
+            color: "#000",
+            weight: 0,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        var dotStyleHighlight = {
+            radius: 6,
+            fillColor: "#20a0ff",
+            color: "#22c",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        var gdotStyleDefault = {
+            radius: 5,
+            fillColor: "#40b060",
+            color: "#000",
+            weight: 0,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        var gdotStyleHighlight = {
+            radius: 6,
+            fillColor: "#40b060",
+            color: "#22c",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        //functions to attach styles and popups to the marker layer
+        function highlightDot(e) {
+            var layer = e.target;
+            layer.setStyle(dotStyleHighlight);
+            if (!L.Browser.ie && !L.Browser.opera) {
+                layer.bringToFront();
+            }
+        }
+        function resetDotHighlight(e) {
+            var layer = e.target;
+            layer.setStyle(dotStyleDefault);
+        }
+        ///THIS IS WHERE THE NEW POPUPS ARE!!!!
+        function filterDot(feature, layer) {
+            layer.on({
+                mouseover: highlightDot,
+                mouseout: resetDotHighlight
+            });
+            layer.bindPopup("<dl><dt>Location:   " + feature.properties.place + "</dt>"
+                    +"<dt>Magnitude:   " + feature.properties.mag + "</dt>"
+                    +"<dt>Time:   " + new Date(feature.properties.time) + "</dt></dl>");
+			return (new Date(feature.properties.time).getYear() == slider.value)  //selects certain features based on the given function
+        }
+  ////////////////////////////////////////////////////////////////////////////////
+ //                     //DONE WITH AESTHETICS!!                               //
+////////////////////////////////////////////////////////////////////////////////
+        
+        var magnitudes = [[4,5.99], [6,6.99], [7,7.99], [8,8.99], [9,10]];        
+        // new layer
+	    var dotlayer = L.geoJSON().addTo(myMap);        //Magnitude 9+
+        var gdotlayer = L.geoJson().addTo(myMap);       //Magnitude 8
+        var Odotlayer = L.geoJson().addTo(myMap);       //Magnitude 7
+        var Ydotlayer = L.geoJson().addTo(myMap);       //Magnitude 6
+        var Wdotlayer = L.geoJson().addTo(myMap);       //Magnitudes 4-5
+
+     //here are the options we want to use when selecting which features, and how to display them
+		var options = {
+		pointToLayer: function(feature, coordinates) {return L.circleMarker(coordinates, dotStyleDefault)},  //not sure what this does
+		filterDot: function(feature, layer) {return (new Date(feature.properties.time).getYear() == slider.value)}  //selects certain features based on the given function
+        };
+        //Trying to search for elements that have a magnitude then add them to the specified Layer
+        function search(magnitudes, MapData){
+            for (var i=0; i < MapData.length; i++) {
+                if (MapData.feature.properties.mag > magnitudes[i][0] && feature.properties.mag < magnitudes[i][1]){
+                    MapData[i].addTo.(gdotlayer)
+                }
+            }
+        }
+    //using those options, create a geo object
+		var mynewgeoObject = L.geoJSON(MapData, options).bindPopup(function(layer) 
+		{return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+					+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+					+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";});
+    //attach the geo object to your new layer
+		mynewgeoObject.addTo(dotlayer)
+        
+        var magnitude8Object = document.getElementById("mag");
+           
+
+        // THIS IS THE FILTER CONTROLS!!!!
+		var overlayMaps = {
+            		'<div class="dotLegend RdotColor"></div> Earthquake Locations': 
+			dotlayer,
+			        '<div class="dotLegend gdotColor"></div> Magnitude 8': 
+			gdotlayer,
+                    '<div class="dotLegend OdotColor"></div> Magnitude 7': 
+			Odotlayer,
+                    '<div class="dotLegend YdotColor"></div> Magnitude 6': 
+			Ydotlayer,
+                    '<div class="dotLegend WdotColor"></div> Magnitude 4-5': 
+			Wdotlayer
+		};
+        	layerbox = L.control.layers(null, overlayMaps, {collapsed: false}).addTo(myMap); // This adds the filter to the map
+    </script>
+
+</body>
+
+
+</html>
