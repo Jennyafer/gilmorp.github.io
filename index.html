@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="leaflet.css" />
     <link rel="stylesheet" href="leaf.css"/>
 	<link rel="stylesheet" href="Tooltip.css"/>
-    <script src="leaflet.js"></script>
+	<script src="leaflet.js"></script>
     <script src="earthquake.js"></script>
     
     <style>
@@ -43,8 +43,8 @@
 		//RUNS ON HTML NOT JAVASCRIPT!!!
 		var slider = document.getElementById("myRange");
 				slider.oninput = function() {
-					//ToolTip popup update Text
-					document.getElementById("tooltiptext").innerHTML = "<dt>Year:   " + new Date(layer.feature.properties.time).getYear() + "</dt>"
+					//ToolTip popup update STILL WORKING ON IT
+					//document.getElementById("tooltiptext").innerHTML = "<dt>Year:   " + new Date(layer.feature.properties.time).getYear() + "</dt>"
 					//clears the geo Layer
 					geoLayer.clearLayers();
 					//TODO: if date != slide date, remove popup
