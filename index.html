@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Geovisualization Final Project</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="leaflet.css" />
     <link rel="stylesheet" href="leaf.css"/>
-    <link rel="stylesheet" href="toolTip.css"/>
+	<link rel="stylesheet" href="Tooltip.css"/>
     <script src="leaflet.js"></script>
     <script src="earthquake.js"></script>
     
@@ -15,7 +15,7 @@
         }
         #defaultMap {
             width: 1500px;
-            height: 850px;
+            height: 800px;
         }
     </style>
 </head>
@@ -23,9 +23,11 @@
 <body>
     <h1 style="color:red;">California Earthquakes</h1>
     <div id="defaultMap"></div>
-
-    <div id="slidecontainer">
+	<br/>
+	<br/>
+    <div class="tooltip" id="slidecontainer">
         <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
+		<span class="tooltiptext">Tooltip text</span>
       </div>
 
     <script>
@@ -37,12 +39,12 @@
   ////////////////////////////////////////////////////////////////////////////////
  //                       //SLIDER INFORMATION                                 //
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
-
+		
+		//RUNS ON HTML NOT JAVASCRIPT!!!
 		var slider = document.getElementById("myRange");
 				slider.oninput = function() {
+					//ToolTip popup update Text
+					document.getElementById("tooltiptext").innerHTML = "<dt>Year:   " + new Date(layer.feature.properties.time).getYear() + "</dt>"
 					//clears the geo Layer
 					geoLayer.clearLayers();
 					//TODO: if date != slide date, remove popup
