@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <title>Geovisualization Final Project</title>
-    <link rel="stylesheet" href="leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <link rel="stylesheet" href="leaflet-easy-button.css"/>
     <link rel="stylesheet" href="leaf.css"/>
     <script src="leaflet.js"></script>
     <script src="earthquake.js"></script>
-    <script src="CaliCounty.js"></script>
-    <script src="leaflet-easy-button.js"></script>
-    <script src="leaflet-tag-filter-button.js"></script>
+    
     <style>
+         body {
+            background-image: url("Background-image.png");
+        }
         #defaultMap {
             width: 1500px;
             height: 850px;
@@ -21,7 +21,7 @@
 </head>
 
 <body>
-    <h1>California Earthquakes</h1>
+    <h1 style="color:red;">California Earthquakes</h1>
     <div id="defaultMap"></div>
 
     <div id="slidecontainer">
@@ -31,140 +31,381 @@
     <script>
         //this is the map
         var myMap = L.map('defaultMap').setView([36.778, -119.417], 6);
-        
         //Start by creating the geoJSON layer
         var geoLayer = L.geoJSON().addTo(myMap);
         
   ////////////////////////////////////////////////////////////////////////////////
  //                       //SLIDER INFORMATION                                 //
 ////////////////////////////////////////////////////////////////////////////////
-var slider = document.getElementById("myRange");
-        slider.oninput = function() {
-            //clears the geo Layer
-            geoLayer.clearLayers();
-            //TODO: if date != slide date, remove popup
-            L.geoJSON(MapData, {
-                //filter out everything that doesn't match the slider date
-                filter: function(feature, layer) {
-                    return (new Date(feature.properties.time).getYear() == slider.value);
-                }
-                //bind pop-ups
-            }).bindPopup(function(layer) {
-                return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
-                    +"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
-                    +"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
-			}).addTo(geoLayer); //dump it all in the geolayer;
-        }
-        //var myMap = L.map('mapid').setView([36.778, -119.417], 6);
 
+
+/**  temporarily commented out for testing
+
+		var slider = document.getElementById("myRange");
+				slider.oninput = function() {
+					//clears the geo Layer
+					geoLayer.clearLayers();
+					//TODO: if date != slide date, remove popup
+					L.geoJSON(MapData, {
+						//filter out everything that doesn't match the slider date
+						filter: function(feature, layer) {
+							return (new Date(feature.properties.time).getYear() == slider.value);
+						}
+						//bind pop-ups
+					}).bindPopup(function(layer) {
+						return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+					}).addTo(geoLayer); //dump it all in the geolayer;
+				}
+**/
         var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
             maxZoom: 16
         }).addTo(myMap);
   
-
   ////////////////////////////////////////////////////////////////////////////////
  //                 //setting up the aesthetic stuff//                         //
 ////////////////////////////////////////////////////////////////////////////////
-//define styles for circle markers
+		//define styles for circle markers      
+        ///////////MAG 4!!!!\\\\\\\\\\
         var dotStyleDefault = {
             radius: 5,
-            fillColor: "#d60303",
+            fillColor: "#ffae00",
             color: "#000",
             weight: 0,
             opacity: 1,
             fillOpacity: 0.9
         };
-
         var dotStyleHighlight = {
             radius: 6,
-            fillColor: "#20a0ff",
+            fillColor: "#ffae00",
             color: "#22c",
             weight: 1,
             opacity: 1,
             fillOpacity: 0.9
         };
-
-        var gdotStyleDefault = {
+		///////////MAG 5!!!!\\\\\\\\\\
+		var gdotStyleDefault = {
             radius: 5,
-            fillColor: "#40b060",
+            fillColor: "#ff7b00",
             color: "#000",
             weight: 0,
             opacity: 1,
             fillOpacity: 0.9
         };
-
         var gdotStyleHighlight = {
             radius: 6,
-            fillColor: "#40b060",
+            fillColor: "#ff7b00",
+            color: "#22c",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        ///////////MAG 6!!!!\\\\\\\\\\
+        var bdotStyleDefault = {
+            radius: 5,
+            fillColor: "#fd4912",
+            color: "#000",
+            weight: 0,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        var bdotStyleHighlight = {
+            radius: 6,
+            fillColor: "#fd4912",
+            color: "#22c",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        ///////////MAG 7+!!!\\\\\\\\\\
+        var ydotStyleDefault = {
+            radius: 5,
+            fillColor: "#cf0000",
+            color: "#000",
+            weight: 0,
+            opacity: 1,
+            fillOpacity: 0.9
+        };
+        var ydotStyleHighlight = {
+            radius: 6,
+            fillColor: "#cf0000",
             color: "#22c",
             weight: 1,
             opacity: 1,
             fillOpacity: 0.9
         };
 
-
-        //functions to attach styles and popups to the marker layer
-        function highlightDot(e) {
-            var layer = e.target;
-
-            layer.setStyle(dotStyleHighlight);
-
-            if (!L.Browser.ie && !L.Browser.opera) {
-                layer.bringToFront();
-            }
-        }
-
-        function resetDotHighlight(e) {
-            var layer = e.target;
-            layer.setStyle(dotStyleDefault);
-        }
-        ///THIS IS WHERE THE NEW POPUPS ARE!!!!
-        function filterDot(feature, layer) {
-            layer.on({
-                mouseover: highlightDot,
-                mouseout: resetDotHighlight
-            });
-            layer.bindPopup("<dl><dt>Location:   " + feature.properties.place + "</dt>"
-                    +"<dt>Magnitude:   " + feature.properties.mag + "</dt>"
-                    +"<dt>Time:   " + new Date(feature.properties.time) + "</dt></dl>");
-			return (new Date(feature.properties.time).getYear() == slider.value)  //selects certain features based on the given function
-        }
 
   ////////////////////////////////////////////////////////////////////////////////
  //                     //DONE WITH AESTHETICS!!                               //
 ////////////////////////////////////////////////////////////////////////////////
-		// new layer
-	    var dotlayer = L.geoJSON().addTo(myMap);
-	  
-     //here are the options we want to use when selecting which features, and how to display them
-		var options = {
-		pointToLayer: function(feature, coordinates) {return L.circleMarker(coordinates, dotStyleDefault)},  //not sure what this does
-		filterDot: function(feature, layer) {return (new Date(feature.properties.time).getYear() == slider.value)}  //selects certain features based on the given function
-		};
-
-    //using those options, create a geo object
-		var mynewgeoObject = L.geoJSON(MapData, options).bindPopup(function(layer) 
-		{return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
-					+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
-					+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";});
-
-    //attach the geo object to your new layer
-		mynewgeoObject.addTo(dotlayer)
-
-        // THIS IS THE FILTER CONTROLS!!!!
-		var overlayMaps = {
-            		'<div class="dotLegend dotColor"></div> Earthquake Locations': 
-			dotlayer
-			//'<div class="dotLegend gdotColor"></div> The Green Dots': 
-			//gdotlayer
-		};
-
-        	layerbox = L.control.layers(null, overlayMaps, {collapsed: false}).addTo(myMap); // This adds the filter to the map
-
+		
+		//there's a better way to do this, but meh
+		var magnitudes = [[0,4.99], [5,5.99], [6,6.99], [7,10]];
+		var dotStyles = [dotStyleDefault, gdotStyleDefault, bdotStyleDefault, ydotStyleDefault];
+        var quakeGroup = L.layerGroup().addTo(myMap);
+        //Magnitude 0-4
+        var dotlayer = L.geoJSON(MapData, {
+			filter: function(feature) {
+				return (feature.properties.mag > magnitudes[0][0] && feature.properties.mag < magnitudes[0][1]);
+			}, pointToLayer: function(feature, coordinates) {
+				return L.circleMarker(coordinates, dotStyleDefault)
+			}, style: function(feature) {
+				return dotStyles[0];
+			}, onEachFeature: function(feature, layer) {
+				layer.on({ 
+					mouseover: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyleHighlight);
+						if (!L.Browser.ie && !L.Browser.opera) {
+							layer.bringToFront();
+						}
+					},
+					mouseout: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyles[0]);
+					}
+				});
+				layer.bindPopup(function(layer) {
+					return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+					});
+			}}
+		).addTo(quakeGroup); 
+        //Magnitude 5
+        var gdotlayer = L.geoJSON(MapData, {
+			filter: function(feature) {
+				return (feature.properties.mag > magnitudes[0][1] && feature.properties.mag < magnitudes[0][2]);
+			}, pointToLayer: function(feature, coordinates) {
+				return L.circleMarker(coordinates, gdotStyleDefault)
+			}, style: function(feature) {
+				return dotStyles[0];
+			}, onEachFeature: function(feature, layer) {
+				layer.on({ 
+					mouseover: function(e) {
+						var layer = e.target;
+						layer.setStyle(gdotStyleHighlight);
+						if (!L.Browser.ie && !L.Browser.opera) {
+							layer.bringToFront();
+						}
+					},
+					mouseout: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyles[0]);
+					}
+				});
+				layer.bindPopup(function(layer) {
+					return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+					});
+			}}
+		).addTo(quakeGroup);
+        //Magnitude 6
+        var Odotlayer = L.geoJSON(MapData, {
+			filter: function(feature) {
+				return (feature.properties.mag > magnitudes[0][2] && feature.properties.mag < magnitudes[0][3]);
+			}, pointToLayer: function(feature, coordinates) {
+				return L.circleMarker(coordinates, bdotStyleDefault)
+			}, style: function(feature) {
+				return dotStyles[0];
+			}, onEachFeature: function(feature, layer) {
+				layer.on({ 
+					mouseover: function(e) {
+						var layer = e.target;
+						layer.setStyle(bdotStyleHighlight);
+						if (!L.Browser.ie && !L.Browser.opera) {
+							layer.bringToFront();
+						}
+					},
+					mouseout: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyles[0]);
+					}
+				});
+				layer.bindPopup(function(layer) {
+					return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+					});
+			}}
+		).addTo(quakeGroup);
+        //Magnitude 7+
+        var Ydotlayer = L.geoJSON(MapData, {
+			filter: function(feature) {
+				return (feature.properties.mag > magnitudes[0][3] && feature.properties.mag < magnitudes[0][4]);
+			}, pointToLayer: function(feature, coordinates) {
+				return L.circleMarker(coordinates, ydotStyleDefault)
+			}, style: function(feature) {
+				return dotStyles[0];
+			}, onEachFeature: function(feature, layer) {
+				layer.on({ 
+					mouseover: function(e) {
+						var layer = e.target;
+						layer.setStyle(ydotStyleHighlight);
+						if (!L.Browser.ie && !L.Browser.opera) {
+							layer.bringToFront();
+						}
+					},
+					mouseout: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyles[0]);
+					}
+				});
+				layer.bindPopup(function(layer) {
+					return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+					});
+			}}
+		).addTo(quakeGroup);       
+	
+		console.log("checking magnitude range "+0);
+		var layer1 = L.geoJSON(MapData, {
+			filter: function(feature) {
+				return (feature.properties.mag > magnitudes[0][0] && feature.properties.mag < magnitudes[0][1]);
+			}, pointToLayer: function(feature, coordinates) {
+				return L.circleMarker(coordinates, dotStyleDefault)
+			}, style: function(feature) {
+				return dotStyles[0];
+			}, onEachFeature: function(feature, layer) {
+				layer.on({ 
+					mouseover: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyleHighlight);
+						if (!L.Browser.ie && !L.Browser.opera) {
+							layer.bringToFront();
+						}
+					},
+					mouseout: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyles[0]);
+					}
+				});
+				layer.bindPopup(function(layer) {
+					return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+					});
+			}}
+		).addTo(quakeGroup);
+		
+		
+	console.log("checking magnitude range "+1);
+		var layer2 = L.geoJSON(MapData, {
+			filter: function(feature) {
+				return (feature.properties.mag > magnitudes[1][0] && feature.properties.mag < magnitudes[1][1]);
+			}, pointToLayer: function(feature, coordinates) {
+				return L.circleMarker(coordinates, dotStyleDefault)
+			}, style: function(feature) {
+				return dotStyles[1];
+			}, onEachFeature: function(feature, layer) {
+				layer.on({ 
+					mouseover: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyleHighlight);
+						if (!L.Browser.ie && !L.Browser.opera) {
+							layer.bringToFront();
+						}
+					},
+					mouseout: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyles[1]);
+					}
+				});
+				layer.bindPopup(function(layer) {
+					return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+					});
+			}}
+		).addTo(quakeGroup);
+		
+		
+		
+				console.log("checking magnitude range "+2);
+		var layer3 = L.geoJSON(MapData, {
+			filter: function(feature) {
+				return (feature.properties.mag > magnitudes[2][0] && feature.properties.mag < magnitudes[2][1]);
+			}, pointToLayer: function(feature, coordinates) {
+				return L.circleMarker(coordinates, dotStyleDefault)
+			}, style: function(feature) {
+				return dotStyles[2];
+			}, onEachFeature: function(feature, layer) {
+				layer.on({ 
+					mouseover: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyleHighlight);
+						if (!L.Browser.ie && !L.Browser.opera) {
+							layer.bringToFront();
+						}
+					},
+					mouseout: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyles[2]);
+					}
+				});
+				layer.bindPopup(function(layer) {
+					return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+					});
+			}}
+		).addTo(quakeGroup);
+		
+		
+		console.log("checking magnitude range "+3);
+		var layer4 = L.geoJSON(MapData, {
+			filter: function(feature) {
+				return (feature.properties.mag > magnitudes[3][0] && feature.properties.mag < magnitudes[3][1]);
+			}, pointToLayer: function(feature, coordinates) {
+				return L.circleMarker(coordinates, dotStyleDefault)
+			}, style: function(feature) {
+				return dotStyles[3];
+			}, onEachFeature: function(feature, layer) {
+				layer.on({ 
+					mouseover: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyleHighlight);
+						if (!L.Browser.ie && !L.Browser.opera) {
+							layer.bringToFront();
+						}
+					},
+					mouseout: function(e) {
+						var layer = e.target;
+						layer.setStyle(dotStyles[3]);
+					}
+				});
+				layer.bindPopup(function(layer) {
+					return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
+							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
+							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
+					});
+			}}
+		).addTo(quakeGroup);
+		
+		/*
+		quakeGroup.eachLayer(function(layer) {
+            '<div class="dotLegend dotColor"></div> Magnitudes 0-4'; layer1,
+            '<div class="dotLegend gdotColor"></div> Magnitude 5'; layer2,
+            '<div class="dotLegend bdotColor"></div> Magnitude 6'; layer3,
+            '<div class="dotLegend ydotColor"></div> Magnitudes 7+'; layer4
+			//runs on each quake layer
+            console.log("I'm a quake layer!");
+		});
+		*/
+		
+// THIS IS THE FILTER CONTROLS!!!!
+var overlayMaps = {
+    '<div class="dotLegend RdotColor"></div> Magnitudes 7+': dotlayer,
+    '<div class="dotLegend gdotColor"></div> Magnitude 6': gdotlayer,
+    '<div class="dotLegend OdotColor"></div> Magnitude 5': Odotlayer,
+    '<div class="dotLegend YdotColor"></div> Magnitudes 0-4': Ydotlayer
+};
+layerbox = L.control.layers(null, overlayMaps, {collapsed: false}).addTo(myMap); // This adds the filter to the map
     </script>
-
 </body>
-
-
 </html>
