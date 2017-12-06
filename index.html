@@ -28,12 +28,13 @@
 		About: <br/>
 		<font size ="2">This webmap is ment to show earthquakes on the Western Coast from 1906-2016. The purpose is to help show people
 			 how many earthquakes actually happen in the area.
-		     We want to provide an interactive map showing statistics of earthquakes in this region over time.</font> 
+		     We want to provide an interactive map showing levels of earthquakes in this region over time.</font> 
 	</a>
 	<br/>
 	<a href="#services">
 		Services:<br/>
-		<font size ="3">This app shows points of origin of earthquakes, dots where they all happend, and has an option to show magnitude and a filter for dates if you wanted a certian year</font>
+		<font size ="3">This app shows the point of origin of recorded earthquakes, dots where they all happend, 
+			and has an option to show magnitude and a filter for dates if you wanted a certian year</font>
 	</a>
 	<br/>
 	<a href="#clients">
@@ -62,7 +63,7 @@
 </div>
 				
 <div class="main">	
-    <h1 style="color:red;">Western United States Earthquakes</h1>
+    <h1 style="color:red;">Western Coast Earthquakes</h1>
     <div id="defaultMap"></div>
 	<br/>
 	<br/>
@@ -84,10 +85,9 @@
 		var slider = document.getElementById("myRange");
 				slider.oninput = function() {
 					//ToolTip popup update
-					document.getElementById("tooltiptext").innerHTML = slider.value
+					document.getElementById("tooltiptext").innerHTML = parseInt(slider.value)+1900
 					//clears the geo Layer
 					geoLayer.clearLayers();
-					//TODO: if date != slide date, remove popup
 					L.geoJSON(MapData, {
 						//filter out everything that doesn't match the slider date
 						filter: function(feature, layer) {
@@ -98,9 +98,8 @@
 						return "<dl><dt>Location:   " + layer.feature.properties.place + "</dt>"
 							+"<dt>Magnitude:   " + layer.feature.properties.mag + "</dt>"
 							+"<dt>Time:   " + new Date(layer.feature.properties.time) + "</dt></dl>";
-					}).addTo(geoLayer); //dump it all in the geolayer;
+					}).addTo(geoLayer); //drop all into the geoLayer;
 				}
-
         var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
             maxZoom: 16
@@ -178,8 +177,6 @@
             opacity: 1,
             fillOpacity: 0.9
         };
-
-
   ////////////////////////////////////////////////////////////////////////////////
  //                     //DONE WITH AESTHETICS!!                               //
 ////////////////////////////////////////////////////////////////////////////////
