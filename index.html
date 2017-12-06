@@ -68,7 +68,7 @@
 	<br/>
     <div class="tooltip" id="slidecontainer">
         <input type="range" min="5" max="116" value="50" class="slider" id="myRange">
-		<span class="tooltiptext">Year</span>
+		<span id="tooltiptext">Year</span>
       </div>
 
     <script>
@@ -80,12 +80,11 @@
   ////////////////////////////////////////////////////////////////////////////////
  //                       //SLIDER INFORMATION                                 //
 ////////////////////////////////////////////////////////////////////////////////
-		
 		//RUNS ON HTML NOT JAVASCRIPT!!!
 		var slider = document.getElementById("myRange");
 				slider.oninput = function() {
-					//ToolTip popup update STILL WORKING ON IT
-					//document.getElementByClassName("tooltiptext").innerHTML = "<dt>" + new Date(layer.feature.properties.time).getYear() + "</dt>"
+					//ToolTip popup update
+					document.getElementById("tooltiptext").innerHTML = slider.value
 					//clears the geo Layer
 					geoLayer.clearLayers();
 					//TODO: if date != slide date, remove popup
